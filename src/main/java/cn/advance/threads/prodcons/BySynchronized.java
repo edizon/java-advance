@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
  * @Classname ByReentrantLock
  * @Description 用 synchronized 实现的生产者消费者模式
  * @Date 2019-05-28 23:05
- * @Author zhouenquan
+ * @Author zhoueq
  */
 class Resource {
     private static int count = 0;

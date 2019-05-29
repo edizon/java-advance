@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
  * @Classname ByBlockingQueue
  * @Description 用synchronized实现的生产者消费者模式
  * @Date 2019-05-28 22:39
- * @Author zhouenquan
+ * @Author zhoueq
  */
 public class ByBlockingQueue {
 

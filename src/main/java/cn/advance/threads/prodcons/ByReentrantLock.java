@@ -8,7 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @Classname ByReentrantLock
  * @Description 用 ReentrantLock 实现的生产者消费者模式
  * @Date 2019-05-29 13:05
- * @Author zhouenquan
+ * @Author zhoueq
  */
 public class ByReentrantLock {
 
