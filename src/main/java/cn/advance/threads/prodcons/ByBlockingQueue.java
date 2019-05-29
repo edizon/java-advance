@@ -1,94 +1,74 @@
 package cn.advance.threads.prodcons;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
  * @Classname ByBlockingQueue
- * @Description 用synchronized实现的生产者消费者模式
+ * @Description 用 ByBlockingQueue 实现的生产者消费者模式
  * @Date 2019-05-28 22:39
  * @Author zhoueq
  */
 public class ByBlockingQueue {
 
-    private static Integer count = 0;
-    private static final Integer FULL = 10;
-    private static final Object lock = new Object();
-
     public static void main(String[] args) {
-        ByBlockingQueue service = new ByBlockingQueue();
-        //new Thread(new Producer()).start();
-        //new Thread(new Consumer()).start();
+        Resource03 resource = new Resource03();
 
-        while (Thread.activeCount() > 2) {
-            Thread.yield();
+        for (int i = 0; i < 10; i++) {
+            new Thread(() -> {
+                resource.produce();
+            }, String.valueOf(i)).start();
         }
-        System.out.println("finished...");
-    }
 
-
-    class Producer implements Runnable {
-
-        @Override
-        public void run() {
-            System.out.println("produce start...");
-
-            for (int i = 0; i < 10; i++) {
-                try {
-                    TimeUnit.SECONDS.sleep(1L);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                synchronized (lock) {
-                    while (count.equals(FULL)) {
-                        try {
-                            lock.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    count++;
-                    System.out.println(Thread.currentThread().getName() + "producing... count=" + count);
-                    lock.notifyAll();
-                }
-            }
-        }
-    }
-
-    class Consumer implements Runnable {
-
-        @Override
-        public void run() {
-            System.out.println("consume start...");
-            for (int i = 0; i < 10; i++) {
-                try {
-                    TimeUnit.SECONDS.sleep(1L);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                synchronized (lock) {
-                    while (count.equals(0)) {
-                        try {
-                            lock.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    count--;
-                    System.out.println(Thread.currentThread().getName() + "consuming... count=" + count);
-                    lock.notifyAll();
-                }
-            }
+        for (int i = 10; i < 20; i++) {
+            new Thread(() -> {
+                resource.consume();
+            }, String.valueOf(i)).start();
         }
     }
 
 }
 
-class Index {
+class Resource03 {
+    private static BlockingQueue<String> blockingQueue = new ArrayBlockingQueue<>(10);
+    private static final Object lock = new Object();
 
-    private Integer count;
-    private Object lock = new Object();
+    void produce() {
+        int index = 0;
+        while (true) {
+            try {
+                try {
+                    TimeUnit.SECONDS.sleep(1L);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                blockingQueue.put(String.valueOf(index));
+                System.out.println(Thread.currentThread().getName() + " 生产者生产, 生产数值=" + index);
+                index++;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    void consume() {
+        while (true) {
+            try {
+                try {
+                    TimeUnit.SECONDS.sleep(1L);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                String v = blockingQueue.take();
+                System.out.println(Thread.currentThread().getName() + " 消费者消费, 消费数值=" + v);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
 
 
